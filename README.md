@@ -17,7 +17,7 @@ appdata/
 │               ├── Preferences.xml
 │               ├── Metadata/
 │               └── Plug-in Support/
-│                   └── Database/
+│                   └── Databases/
 │                       ├── com.plexapp.plugins.library.blobs.db
 │                       └── com.plexapp.plugins.library.db
 ├── qBittorrent/

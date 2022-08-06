@@ -9,7 +9,6 @@ TMPDIR="/tmp" # temporary directory to hold the exported db - Needs write permis
 # ---------
 # VARIABLES
 DATETIME=$(date +"%F_%H-%M-%S") # format 2022-08-06_11-12-07
-EXTENSION="tar.xz" # extension pass to tar compression
 
 # bash colors
 YELLOW="\033[1;33m"
@@ -17,77 +16,122 @@ GRAY="\033[1;30m"
 CYAN="\033[0;36m"
 GREEN="\033[1;32m"
 
-# ------------
-# APPLICATIONS
+# ---------
+# FUNCTIONS
+export_backup() {
+  local FILENAME="$1"
+  local APPDIR="$2"
+  local DB="$3"
 
-vaultwarden() {
-  # backup file name to create inside $BACKUPS
-  local FILENAME="vaultwarden"
-  # directory inside $APPDATA
-  local APPDIR="vaultwarden"
-  # database to export (inside $APPDATA)
-  local DBS=(
-    "db.sqlite3"
-  )
-  # files to compress (inside $APPDATA)
-  local FILES=(
-    "config.json" # file
-    "rsa_key*" # glob pattern allowed
-    "attachments" # directory
-    "sends" # directory
-  )
+  local SOURCE="$(realpath "$APPDATA/$APPDIR/$DB")"
+  local DEST="$TMPDIR/$APPDIR/$DB"
+  echo -e "${GRAY}[$FILENAME] Exporting $(basename "$SOURCE") to temp_dir"
 
-  echo -e "${YELLOW}[vaultwarden] Started"
+  # needs to create the path in temp dir (will ifnore if already exists)
+  mkdir -p "$(dirname "$DEST")"
+  echo ".backup \""$DEST"\"" | sqlite3 "$SOURCE"
+}
 
-  # path of dbs to pass to tar
-  local DBSARG=""
-
-  # iterate $DBS to export and save in $TMPDIR
-  for DB in ${DBS[@]}; do
-    local SOURCE="$APPDATA/$APPDIR/$DB"
-    local DEST="$TMPDIR/$APPDIR/$DB"
-
-    # needs to create the path
-    mkdir -p "$(dirname "$DEST")"
-
-    echo -e "${GRAY}[vaultwarden] Exporting "$SOURCE" to "$DEST""
-    sqlite3 $SOURCE ".backup "$DEST""
-
-    # realpath only works if the file exists
-    DBSARG+=" $(realpath "$DEST")"
-  done
-
-  # paths of files to pass to tar
-  local FILESARG=""
-
-  # iterate over $FILES to make the string to pass to tar
-  for FILE in ${FILES[@]}; do
-    FILESARG+=" $(realpath "$APPDATA/$APPDIR/$FILE")"
-  done
+compress_backup() {
+  local FILENAME="$1"
+  shift
+  local FILES=("$@")
 
   # tar destination file
-  local TARFILE="$BACKUPS/$FILENAME.${DATETIME}.${EXTENSION}"
-  echo -e "${CYAN}[vaultwarden] Packing "$TARFILE""
+  local TARFILE="$FILENAME.${DATETIME}.tar.xz"
+  echo -e "${CYAN}[$FILENAME] Packing "$TARFILE""
 
   # tar command explained
   #    c = create a new archive
-  #    a = use archive suffix to determine the compression program
-  #    f = use archive file
+  #    I = use xz compression algorithm with options (-T0 for enable multi-thread)
+  #    f = specify file name
   #    --transform = use sed replace EXPRESSION to transform files (from inside the tar)
   #        "s,<find>,<replace>," format
-  #        we are removing the "/tmp" and "appdata" directories from the archive
+  #        we are removing the "/tmp" ($TMPDIR) and "/appdata" ($APPDATA) from the archive
   #        the goal is to make a flat archive
   #    --absolute-names = don't strip leading '/'s from file names
-  #        it is needed to apply the --transform sed
+  #        it is needed to apply our --transform sed (or need to change it)
   #    --ignore-failed-read = do not exit with nonzero on unreadable files
-  tar caf "$TARFILE" \
-      --transform "s,$TMPDIR/,,;s,$APPDATA/,," \
-      --absolute-names --ignore-failed-read \
-      $DBSARG $FILESARG
+  tar -cI "xz -T0" -f "$BACKUPS/$TARFILE" \
+    --transform "s,^$TMPDIR/,,;s,^$APPDATA/,," \
+    --absolute-names --ignore-failed-read \
+    "${FILES[@]}"
+}
 
-  echo -e "${GREEN}[vaultwarden] Finished"
+remove_tmp() {
+  local FILENAME="$1"
+  local APPDIR="$2"
+
+  echo -e "${GRAY}[$FILENAME] Removing temp_dir"
+  rm -rf "$TMPDIR/$APPDIR/$DB"
+}
+
+# ------------
+# APPLICATIONS
+vaultwarden() {
+  # vaultwarden/
+  # ├── db.sqlite3
+  # ├── rsa_key*
+  # ├── config.json
+  # ├── attachments/
+  # └── sends/
+  local FILENAME="vaultwarden" # backup file name to create inside $BACKUPS
+  local APPDIR="vaultwarden"   # directory inside $APPDATA
+  local DBS=("db.sqlite3")     # database to export (inside $APPDATA)
+  local FILES=(                # files to compress (inside $APPDATA)
+    "config.json"              # file
+    "rsa_key*"                 # glob pattern allowed
+    "attachments"              # directory
+    "sends"                    # directory
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do
+    export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$(realpath "$TMPDIR/$APPDIR/$DB")");
+  done
+  for FILE in "${FILES[@]}"; do ARGS+=("$(realpath "$APPDATA/$APPDIR/$FILE")"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+plex() {
+  # plex/
+  # └── Library/
+  #     └── Application Support/
+  #         └── Plex Media Server/
+  #             ├── Preferences.xml
+  #             ├── Metadata/
+  #             └── Plug-in Support/
+  #                 └── Databases/
+  #                     ├── com.plexapp.plugins.library.db
+  #                     └── com.plexapp.plugins.library.blobs.db
+  local FILENAME="plex"
+  local APPDIR="plex/Library/Application Support/Plex Media Server"
+  local DBS=(
+    "Plug-in Support/Databases/com.plexapp.plugins.library.db"
+    "Plug-in Support/Databases/com.plexapp.plugins.library.blobs.db"
+  )
+  local FILES=(
+    "Preferences.xml"
+    "Metadata"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do
+    export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$(realpath "$TMPDIR/$APPDIR/$DB")");
+  done
+  for FILE in "${FILES[@]}"; do ARGS+=("$(realpath "$APPDATA/$APPDIR/$FILE")"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
 }
 
 # -------
 # EXECUTE
 vaultwarden
+plex
