@@ -27,7 +27,7 @@ export_backup() {
   local DEST="$TMPDIR/$APPDIR/$DB"
   echo -e "${GRAY}[$FILENAME] 1/3 Exporting $(basename "$SOURCE") to temp_dir"
 
-  # needs to create the path in temp dir (will ifnore if already exists)
+  # needs to create the path in temp dir (will ignore if already exists)
   mkdir -p "$(dirname "$DEST")"
   echo ".backup \""$DEST"\"" | sqlite3 "$SOURCE"
 }
@@ -37,7 +37,6 @@ compress_backup() {
   shift
   local FILES=("$@")
 
-  # tar destination file
   local TARFILE="$FILENAME.${DATETIME}.tar.xz"
   echo -e "${CYAN}[$FILENAME] 2/3 Packing "$TARFILE""
 
