@@ -2,9 +2,9 @@
 
 # --------
 # SETTINGS
-APPDATA="$(pwd)/appdata" # the directory that contains your apps - Needs read permission
-BACKUPS="$(pwd)/backups" # the directory that will keep the backups - Needs write permission
-TMPDIR="/tmp" # temporary directory to hold the exported db - Needs write permission
+APPDATA="/appdata" # the directory that contains your apps - Needs read permission
+BACKUPS="/backups" # the directory that will keep the backups - Needs write permission
+TMPDIR="/tmp"      # temporary directory to hold the exported db - Needs write permission
 
 # ---------
 # VARIABLES
