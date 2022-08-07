@@ -94,7 +94,7 @@ vaultwarden() {
     export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB");
   done
   for FILE in "${FILES[@]}"; do
-    local GLOB=$(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}");
+    local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}");
   done
   compress_backup "$FILENAME" "${ARGS[@]}"
   remove_tmp "$FILENAME" "$APPDIR"
@@ -130,7 +130,7 @@ plex() {
     export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB");
   done
   for FILE in "${FILES[@]}"; do
-    local GLOB=$(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}");
+    local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}");
   done
   compress_backup "$FILENAME" "${ARGS[@]}"
   remove_tmp "$FILENAME" "$APPDIR"
