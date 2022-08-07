@@ -16,8 +16,8 @@ GRAY="\033[1;30m"
 CYAN="\033[0;36m"
 GREEN="\033[1;32m"
 
-# ---------
-# FUNCTIONS
+# -----
+# STEPS
 export_backup() {
   local FILENAME="$1"
   local APPDIR="$2"
@@ -25,7 +25,7 @@ export_backup() {
 
   local SOURCE="$APPDATA/$APPDIR/$DB"
   local DEST="$TMPDIR/$APPDIR/$DB"
-  echo -e "${GRAY}[$FILENAME] Exporting $(basename "$SOURCE") to temp_dir"
+  echo -e "${GRAY}[$FILENAME] 1/3 Exporting $(basename "$SOURCE") to temp_dir"
 
   # needs to create the path in temp dir (will ifnore if already exists)
   mkdir -p "$(dirname "$DEST")"
@@ -39,7 +39,7 @@ compress_backup() {
 
   # tar destination file
   local TARFILE="$FILENAME.${DATETIME}.tar.xz"
-  echo -e "${CYAN}[$FILENAME] Packing "$TARFILE""
+  echo -e "${CYAN}[$FILENAME] 2/3 Packing "$TARFILE""
 
   # tar command explained
   #    c = create a new archive
@@ -64,7 +64,7 @@ remove_tmp() {
   local FILENAME="$1"
   local APPDIR="$2"
 
-  echo -e "${GRAY}[$FILENAME] Removing temp_dir"
+  echo -e "${GRAY}[$FILENAME] 3/3 Removing temp_dir"
   rm -rf "$TMPDIR/$APPDIR/$DB"
 }
 
@@ -90,12 +90,8 @@ vaultwarden() {
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
   local ARGS=() # will keep the files to pass to tar
-  for DB in "${DBS[@]}"; do
-    export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB");
-  done
-  for FILE in "${FILES[@]}"; do
-    local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}");
-  done
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
   compress_backup "$FILENAME" "${ARGS[@]}"
   remove_tmp "$FILENAME" "$APPDIR"
   echo -e "${GREEN}[$FILENAME] Finished"
@@ -126,18 +122,186 @@ plex() {
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
   local ARGS=() # will keep the files to pass to tar
-  for DB in "${DBS[@]}"; do
-    export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB");
-  done
-  for FILE in "${FILES[@]}"; do
-    local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}");
-  done
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+prowlarr() {
+  # prowlarr/
+  # ├── prowlarr.db
+  # └── config.xml
+  local FILENAME="prowlarr"
+  local APPDIR="prowlarr"
+  local DBS=(
+    "prowlarr.db"
+  )
+  local FILES=(
+    "config.xml"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+radarr() {
+  # radarr/
+  # ├── radarr.db
+  # └── config.xml
+  local FILENAME="radarr"
+  local APPDIR="radarr"
+  local DBS=(
+    "radarr.db"
+  )
+  local FILES=(
+    "config.xml"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+sonarr() {
+  # sonarr/
+  # ├── sonarr.db
+  # └── config.xml
+  local FILENAME="sonarr"
+  local APPDIR="sonarr"
+  local DBS=(
+    "sonarr.db"
+  )
+  local FILES=(
+    "config.xml"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+bazarr() {
+  # bazarr/
+  # ├── config/
+  # │   └── config.ini
+  # └── db/
+  #     └── bazarr.db
+  local FILENAME="bazarr"
+  local APPDIR="bazarr"
+  local DBS=(
+    "db/bazarr.db"
+  )
+  local FILES=(
+    "config/config.ini"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+tautulli() {
+  # tautulli/
+  # ├── tautulli.db
+  # └── config.ini
+  local FILENAME="tautulli"
+  local APPDIR="tautulli"
+  local DBS=(
+    "tautulli.db"
+  )
+  local FILES=(
+    "config.ini"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+qbittorrent() {
+  # qbittorrent/
+  # └── qBittorrent/
+  #     ├── categories.json
+  #     ├── qBittorrent.conf
+  #     ├── qBittorrent-data.conf
+  #     └── BT_backup/
+  local FILENAME="qbittorrent"
+  local APPDIR="qbittorrent/qBittorrent"
+  local DBS=()
+  local FILES=(
+    "categories.json"
+    "qBittorrent.conf"
+    "qBittorrent-data.conf"
+    "BT_backup" # directory
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+sabnzbd() {
+  # sabnzbd/
+  # └── sabnzbd.ini
+  local FILENAME="sabnzbd"
+  local APPDIR="sabnzbd"
+  local DBS=()
+  local FILES=(
+    "sabnzbd.ini"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
   compress_backup "$FILENAME" "${ARGS[@]}"
   remove_tmp "$FILENAME" "$APPDIR"
   echo -e "${GREEN}[$FILENAME] Finished"
 }
 
 # -------
-# EXECUTE
-vaultwarden
-plex
+# EXECUTE (in paralell)
+vaultwarden &
+plex &
+prowlarr &
+radarr &
+sonarr &
+bazarr &
+tautulli &
+sabnzbd &
+qbittorrent &
+wait
