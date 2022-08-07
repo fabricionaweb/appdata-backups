@@ -134,12 +134,8 @@ prowlarr() {
   # └── config.xml
   local FILENAME="prowlarr"
   local APPDIR="prowlarr"
-  local DBS=(
-    "prowlarr.db"
-  )
-  local FILES=(
-    "config.xml"
-  )
+  local DBS=("prowlarr.db")
+  local FILES=("config.xml")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -157,12 +153,8 @@ radarr() {
   # └── config.xml
   local FILENAME="radarr"
   local APPDIR="radarr"
-  local DBS=(
-    "radarr.db"
-  )
-  local FILES=(
-    "config.xml"
-  )
+  local DBS=("radarr.db")
+  local FILES=("config.xml")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -180,12 +172,8 @@ sonarr() {
   # └── config.xml
   local FILENAME="sonarr"
   local APPDIR="sonarr"
-  local DBS=(
-    "sonarr.db"
-  )
-  local FILES=(
-    "config.xml"
-  )
+  local DBS=("sonarr.db")
+  local FILES=("config.xml")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -205,12 +193,8 @@ bazarr() {
   #     └── bazarr.db
   local FILENAME="bazarr"
   local APPDIR="bazarr"
-  local DBS=(
-    "db/bazarr.db"
-  )
-  local FILES=(
-    "config/config.ini"
-  )
+  local DBS=("db/bazarr.db")
+  local FILES=("config/config.ini")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -228,12 +212,8 @@ tautulli() {
   # └── config.ini
   local FILENAME="tautulli"
   local APPDIR="tautulli"
-  local DBS=(
-    "tautulli.db"
-  )
-  local FILES=(
-    "config.ini"
-  )
+  local DBS=("tautulli.db")
+  local FILES=("config.ini")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -254,7 +234,6 @@ qbittorrent() {
   #     └── BT_backup/
   local FILENAME="qbittorrent"
   local APPDIR="qbittorrent/qBittorrent"
-  local DBS=()
   local FILES=(
     "categories.json"
     "qBittorrent.conf"
@@ -265,7 +244,6 @@ qbittorrent() {
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
   local ARGS=() # will keep the files to pass to tar
-  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
   for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
   compress_backup "$FILENAME" "${ARGS[@]}"
   remove_tmp "$FILENAME" "$APPDIR"
@@ -277,15 +255,11 @@ sabnzbd() {
   # └── sabnzbd.ini
   local FILENAME="sabnzbd"
   local APPDIR="sabnzbd"
-  local DBS=()
-  local FILES=(
-    "sabnzbd.ini"
-  )
+  local FILES=("sabnzbd.ini")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
   local ARGS=() # will keep the files to pass to tar
-  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
   for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
   compress_backup "$FILENAME" "${ARGS[@]}"
   remove_tmp "$FILENAME" "$APPDIR"
@@ -303,4 +277,5 @@ bazarr &
 tautulli &
 sabnzbd &
 qbittorrent &
+
 wait
