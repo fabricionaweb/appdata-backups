@@ -97,7 +97,7 @@ vaultwarden() {
 }
 
 plex() {
-  # plex/
+  # plex/ (from lsio image)
   # └── Library/
   #     └── Application Support/
   #         └── Plex Media Server/
@@ -129,7 +129,7 @@ plex() {
 }
 
 prowlarr() {
-  # prowlarr/
+  # prowlarr/ (from lsio image)
   # ├── prowlarr.db
   # └── config.xml
   local FILENAME="prowlarr"
@@ -148,7 +148,7 @@ prowlarr() {
 }
 
 radarr() {
-  # radarr/
+  # radarr/ (from lsio image)
   # ├── radarr.db
   # └── config.xml
   local FILENAME="radarr"
@@ -167,7 +167,7 @@ radarr() {
 }
 
 sonarr() {
-  # sonarr/
+  # sonarr/ (from lsio image)
   # ├── sonarr.db
   # └── config.xml
   local FILENAME="sonarr"
@@ -186,7 +186,7 @@ sonarr() {
 }
 
 bazarr() {
-  # bazarr/
+  # bazarr/ (from lsio image)
   # ├── config/
   # │   └── config.ini
   # └── db/
@@ -207,7 +207,7 @@ bazarr() {
 }
 
 tautulli() {
-  # tautulli/
+  # tautulli/ (from lsio image)
   # ├── tautulli.db
   # └── config.ini
   local FILENAME="tautulli"
@@ -226,19 +226,23 @@ tautulli() {
 }
 
 qbittorrent() {
-  # qbittorrent/
-  # └── qBittorrent/
+  # qbittorrent/ (from hotio image)
+  # ├── wireguard/
+  # │   └── wg0.conf
+  # ├── data/
+  # │   └── BT_backup/
+  # └── config/
   #     ├── categories.json
   #     ├── qBittorrent.conf
   #     ├── qBittorrent-data.conf
-  #     └── BT_backup/
   local FILENAME="qbittorrent"
-  local APPDIR="qbittorrent/qBittorrent"
+  local APPDIR="qbittorrent"
   local FILES=(
-    "categories.json"
-    "qBittorrent.conf"
-    "qBittorrent-data.conf"
-    "BT_backup" # directory
+    "wireguard/wg0.conf"
+    "config/categories.json"
+    "config/qBittorrent.conf"
+    "config/qBittorrent-data.conf"
+    "data/BT_backup" # directory
   )
 
   # start the script
@@ -251,7 +255,7 @@ qbittorrent() {
 }
 
 sabnzbd() {
-  # sabnzbd/
+  # sabnzbd/ (from lsio image)
   # └── sabnzbd.ini
   local FILENAME="sabnzbd"
   local APPDIR="sabnzbd"
