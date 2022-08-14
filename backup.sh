@@ -115,7 +115,7 @@ plex() {
   )
   local FILES=(
     "Preferences.xml"
-    "Metadata" # directory
+    # "Metadata" # directory
   )
 
   # start the script
