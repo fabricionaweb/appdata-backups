@@ -26,6 +26,8 @@ appdata/
 │       └── BT_backup/
 ├── SABnzbd/
 │   └── sabnzbd.ini
+├── Recyclarr/
+│   └── recyclarr.yml
 ├── Prowlarr/
 │   ├── prowlarr.db
 │   └── config.xml

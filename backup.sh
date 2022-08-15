@@ -76,10 +76,10 @@ vaultwarden() {
   # ├── config.json
   # ├── attachments/
   # └── sends/
-  local FILENAME="vaultwarden" # backup file name to create inside $BACKUPS
-  local APPDIR="vaultwarden"   # directory inside $APPDATA
-  local DBS=("db.sqlite3")     # database to export (inside $APPDATA)
-  local FILES=(                # files and directories to send to tar (inside $APPDATA)
+  local FILENAME="vaultwarden" # backup file name to create (inside $BACKUPS)
+  local APPDIR="vaultwarden"   # directory (inside $APPDATA)
+  local DBS=("db.sqlite3")     # database to export (inside $APPDATA/$APPDIR)
+  local FILES=(                # files and directories to send to tar (inside $APPDATA/$APPDIR)
     "config.json"              # file
     "rsa_key*"                 # glob pattern (for $FILES only) use wisely or avoid
     "attachments"              # directory
@@ -270,6 +270,22 @@ sabnzbd() {
   echo -e "${GREEN}[$FILENAME] Finished"
 }
 
+recyclarr() {
+  # recyclarr/
+  # └── recyclarr.yml
+  local FILENAME="recyclarr"
+  local APPDIR="recyclarr"
+  local FILES=("recyclarr.yml")
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
 # -------
 # EXECUTE (in paralell)
 vaultwarden &
@@ -281,5 +297,6 @@ bazarr &
 tautulli &
 sabnzbd &
 qbittorrent &
+recyclarr &
 
 wait
