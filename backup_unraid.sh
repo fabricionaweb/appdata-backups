@@ -23,7 +23,8 @@ FILES=(                          # files and directories to send to tar (needs t
 
 # ---------
 # VARIABLES
-DATETIME=$(date +"%F_%H-%M-%S") # format 2022-08-06_11-12-07
+DATE=$(date +%F)         # 2022-08-16
+TIME=$(date +"%H-%M-%S") # 00-52-38
 
 # bash colors
 YELLOW="\033[1;33m"
@@ -35,7 +36,7 @@ GREEN="\033[1;32m"
 # BACKUP
 echo -e "${YELLOW}[$FILENAME] Started"
 
-TARFILE="$FILENAME.${DATETIME}.tar.xz"
+TARFILE="$FILENAME.${TIME}.tar.xz"
 echo -e "${CYAN}[$FILENAME] Packing "$TARFILE""
 
 # tar command explained
@@ -43,5 +44,6 @@ echo -e "${CYAN}[$FILENAME] Packing "$TARFILE""
 #    I = compression algorithm options
 #        xz compresstion with multi-thread enabled (-T0)
 #    f = specify file name
-tar -cI "xz -T0" -f "$BACKUPS/$TARFILE" ${FILES[@]}
+mkdir -p "$BACKUPS/$DATE"
+tar -cI "xz -T0" -f "$BACKUPS/$DATE/$TARFILE" ${FILES[@]}
 echo -e "${GREEN}[$FILENAME] Finished"

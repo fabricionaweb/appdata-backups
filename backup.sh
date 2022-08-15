@@ -2,13 +2,14 @@
 
 # --------
 # SETTINGS
-APPDATA="/appdata" # the directory that contains your apps - Needs read permission
-BACKUPS="/backups" # the directory that will keep the backups - Needs write permission
-TMPDIR="/tmp"      # temporary directory to hold the exported db - Needs write permission
+APPDATA="/mnt/user/appdata"      # the directory that contains your apps - Needs read permission
+BACKUPS="/mnt/user/data/backups" # the directory that will keep the backups - Needs write permission
+TMPDIR="/tmp"                    # temporary directory to hold the exported db - Needs write permission
 
 # ---------
 # VARIABLES
-DATETIME=$(date +"%F_%H-%M-%S") # format 2022-08-06_11-12-07
+DATE=$(date +%F)         # 2022-08-16
+TIME=$(date +"%H-%M-%S") # 00-52-38
 
 # bash colors
 YELLOW="\033[1;33m"
@@ -37,7 +38,7 @@ compress_backup() {
   shift
   local FILES=("$@")
 
-  local TARFILE="$FILENAME.${DATETIME}.tar.xz"
+  local TARFILE="$FILENAME.${TIME}.tar.xz"
   echo -e "${CYAN}[$FILENAME] 2/3 Packing "$TARFILE""
 
   # tar command explained
@@ -53,7 +54,8 @@ compress_backup() {
   #        it is needed to apply our --transform sed (or need to change it)
   #    --ignore-failed-read = do not exit with nonzero on unreadable files
   #        if something goes wrong it will not stop the tar, but you should always verify that
-  tar -cI "xz -T0" -f "$BACKUPS/$TARFILE" \
+  mkdir -p "$BACKUPS/$DATE"
+  tar -cI "xz -T0" -f "$BACKUPS/$DATE/$TARFILE" \
     --transform "s,^$TMPDIR/,,;s,^$APPDATA/,," \
     --absolute-names --ignore-failed-read \
     "${FILES[@]}"
