@@ -288,6 +288,26 @@ recyclarr() {
   echo -e "${GREEN}[$FILENAME] Finished"
 }
 
+overseerr() {
+  # overseerr/ (from lsio image)
+  # ├── settings.json
+  # └── db/
+  #     └── db.sqlite3
+  local FILENAME="overseerr"
+  local APPDIR="overseerr"
+  local DBS=("db/db.sqlite3")
+  local FILES=("settings.json")
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
 # -------
 # EXECUTE (in paralell)
 vaultwarden &
@@ -300,5 +320,6 @@ tautulli &
 sabnzbd &
 qbittorrent &
 recyclarr &
+overseerr &
 
 wait
