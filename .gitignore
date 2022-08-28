@@ -1,3 +1,6 @@
+.prettierrc
+
+unraid/
 appdata/
 backups/
-.prettierrc
+backups_untar/
