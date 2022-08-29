@@ -19,11 +19,14 @@ appdata/
 │                       ├── com.plexapp.plugins.library.blobs.db
 │                       └── com.plexapp.plugins.library.db
 ├── qBittorrent/
-│   └── qBittorrent/
+│   ├── wireguard/
+│   │   └── wg0.conf
+│   ├── data/
+│   │   └── BT_backup/
+│   └── config/
 │       ├── categories.json
 │       ├── qBittorrent.conf
-│       ├── qBittorrent-data.conf
-│       └── BT_backup/
+│       └── qBittorrent-data.conf
 ├── SABnzbd/
 │   └── sabnzbd.ini
 ├── Recyclarr/

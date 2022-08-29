@@ -244,7 +244,7 @@ qbittorrent() {
   # └── config/
   #     ├── categories.json
   #     ├── qBittorrent.conf
-  #     ├── qBittorrent-data.conf
+  #     └── qBittorrent-data.conf
   local FILENAME="qbittorrent"
   local APPDIR="qbittorrent"
   local FILES=(
