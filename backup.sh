@@ -116,6 +116,7 @@ plex() {
   #             ├── Preferences.xml
   #             ├── Metadata/
   #             └── Plug-in Support/
+  #                 ├── Preferences/
   #                 └── Databases/
   #                     ├── com.plexapp.plugins.library.db
   #                     └── com.plexapp.plugins.library.blobs.db
@@ -126,8 +127,8 @@ plex() {
     "Plug-in Support/Databases/com.plexapp.plugins.library.blobs.db"
   )
   local FILES=(
+    "Plug-in Support/Preferences" # directory
     "Preferences.xml"
-    # "Metadata" # directory
   )
 
   # start the script

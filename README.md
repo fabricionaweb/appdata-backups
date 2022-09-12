@@ -13,8 +13,8 @@ appdata/
 │       └── Application Support/
 │           └── Plex Media Server/
 │               ├── Preferences.xml
-│               ├── Metadata/
 │               └── Plug-in Support/
+│                   ├── Preferences/
 │                   └── Databases/
 │                       ├── com.plexapp.plugins.library.blobs.db
 │                       └── com.plexapp.plugins.library.db
