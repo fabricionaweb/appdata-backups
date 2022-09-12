@@ -7,7 +7,7 @@ APPDATA="/mnt/user/appdata"      # the directory that contains your apps - Needs
 BACKUPS="/mnt/user/data/backups" # the directory that will keep the backups - Needs write permission
 
 # gonna test it with duplicati/duplicacy - remove if you dont need
-BACKUPS_UNTAR="${BACKUPS}_untar" # the directory that will keep a backups copy without compression - Needs write permission
+BACKUPS_UNTAR="${BACKUPS}/untar" # the directory that will keep a backups copy without compression - Needs write permission
 
 # ---------
 # VARIABLES
