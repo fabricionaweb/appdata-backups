@@ -6,7 +6,7 @@ TMPDIR="/tmp"                    # temporary directory to hold the exported db -
 APPDATA="/mnt/user/appdata"      # the directory that contains your apps - Needs read permission
 BACKUPS="/mnt/user/data/backups" # the directory that will keep the backups - Needs write permission
 
-# gonna test it with duplicati
+# gonna test it with duplicati/duplicacy - remove if you dont need
 BACKUPS_UNTAR="${BACKUPS}_untar" # the directory that will keep a backups copy without compression - Needs write permission
 
 # ---------
@@ -64,9 +64,11 @@ compress_backup() {
     "${FILES[@]}"
 
   # save a uncompress copy
-  mkdir -p "$BACKUPS_UNTAR"
-  echo -e "${CYAN}[$FILENAME] 2/3 Extrating copy "$TARFILE""
-  tar -xJf "$BACKUPS/$DATE/$TARFILE" -C "$BACKUPS_UNTAR"
+  if [[ "$BACKUPS_UNTAR" ]]; then
+    mkdir -p "$BACKUPS_UNTAR"
+    echo -e "${CYAN}[$FILENAME] 2/3 Extrating copy "$TARFILE""
+    tar -xJf "$BACKUPS/$DATE/$TARFILE" -C "$BACKUPS_UNTAR"
+  fi
 }
 
 remove_tmp() {
