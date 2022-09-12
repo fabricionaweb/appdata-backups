@@ -14,8 +14,10 @@ FILENAME="unraid-usb"            # backup file name to create inside $BACKUPS
 FILES=(                          # files and directories to send to tar (needs to prepend with $CONFIG)
   # gets everything except: plugins, plugins-error, plugins-removed
   "$CONFIG/!(plugins*)"
-  # gets all plugins except: dynamix.my.servers
-  "$CONFIG/plugins/!(dynamix.my.servers)"
+  # gets all plugins except: dynamix.my.servers, rclone
+  "$CONFIG/plugins/!(dynamix.my.servers|rclone)"
+  # gets the rclone.conf
+  "$CONFIG/plugins/rclone/.rclone.conf"
 )
 
 # ---------
