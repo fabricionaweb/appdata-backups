@@ -327,8 +327,8 @@ radarr &
 sonarr &
 bazarr &
 tautulli &
-sabnzbd &
 qbittorrent &
+sabnzbd &
 recyclarr &
 overseerr &
 

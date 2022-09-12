@@ -1,0 +1,5 @@
+.rclone-ignore
+
+duplicacy/
+duplicati/
+untar/
