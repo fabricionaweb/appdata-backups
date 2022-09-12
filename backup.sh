@@ -318,6 +318,36 @@ overseerr() {
   echo -e "${GREEN}[$FILENAME] Finished"
 }
 
+duplicati() {
+  # duplicati/ (from lsio image)
+  # ├── .config/
+  # ├── control_dir_v2/
+  # └── *.sqlite
+  local FILENAME="duplicati"
+  local APPDIR="duplicati"
+  local DBS=("*.sqlite")
+  local FILES=(
+    ".config"
+    "control_dir_v2"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+
+  # this whole loop is only needed when doing glob for $DBS
+  for DB in "${DBS[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$DB")
+    for DB_PATH in "${GLOB[@]}"; do local DB_FILE=$(echo "$DB_PATH" | sed "s,^$APPDATA/$APPDIR/,,") # remove absolute path from glob
+      export_backup "$FILENAME" "$APPDIR" "$DB_FILE"; ARGS+=("$TMPDIR/$APPDIR/$DB_FILE")
+    done
+  done
+
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
 # -------
 # EXECUTE (in paralell)
 vaultwarden &
@@ -331,5 +361,6 @@ qbittorrent &
 sabnzbd &
 recyclarr &
 overseerr &
+duplicati &
 
 wait
