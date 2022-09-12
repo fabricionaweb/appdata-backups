@@ -12,13 +12,10 @@ BACKUPS="/mnt/user/data/backups" # the directory that will keep the backups
 
 FILENAME="unraid-usb"            # backup file name to create inside $BACKUPS
 FILES=(                          # files and directories to send to tar (needs to prepend with $CONFIG)
-  # get everything (files and folders) except: plugins* folder (plugins, plugins-error, plugins-removed)
+  # gets everything except: plugins, plugins-error, plugins-removed
   "$CONFIG/!(plugins*)"
-  # entire folder (contain the cron jobs)
-  "$CONFIG/plugins/user.scripts/scripts"
-  # get any config file inside the plugins folder (since we had ignored it before)
-  # you can use the folder name to identify the plugin and install it again manually
-  "$CONFIG/plugins/**/*(*.cfg|*.conf|*.json|*.ini|*.xml|*.yml|*.yaml)"
+  # gets all plugins except: dynamix.my.servers
+  "$CONFIG/plugins/!(dynamix.my.servers)"
 )
 
 # ---------
