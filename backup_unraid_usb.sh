@@ -27,7 +27,6 @@ TIME=$(date +"%H-%M-%S") # 00-52-38
 
 # bash colors
 YELLOW="\033[1;33m"
-GRAY="\033[1;30m"
 CYAN="\033[0;36m"
 GREEN="\033[1;32m"
 
