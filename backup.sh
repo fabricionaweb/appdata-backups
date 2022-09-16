@@ -167,7 +167,11 @@ radarr() {
   local FILENAME="radarr"
   local APPDIR="radarr"
   local DBS=("radarr.db")
-  local FILES=("config.xml")
+  local FILES=(
+    "config.xml"
+    "*.sh"
+    "*.py"
+  )
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -186,7 +190,11 @@ sonarr() {
   local FILENAME="sonarr"
   local APPDIR="sonarr"
   local DBS=("sonarr.db")
-  local FILES=("config.xml")
+  local FILES=(
+    "config.xml"
+    "*.sh"
+    "*.py"
+  )
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -226,7 +234,11 @@ tautulli() {
   local FILENAME="tautulli"
   local APPDIR="tautulli"
   local DBS=("tautulli.db")
-  local FILES=("config.ini")
+  local FILES=(
+    "config.ini"
+    "*.sh"
+    "*.py"
+  )
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -328,8 +340,8 @@ duplicati() {
   local APPDIR="duplicati"
   local DBS=("*.sqlite")
   local FILES=(
-    ".config"
-    "control_dir_v2"
+    ".config"        # directory
+    "control_dir_v2" # directory
   )
 
   # start the script
