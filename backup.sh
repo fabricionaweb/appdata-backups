@@ -361,6 +361,106 @@ duplicati() {
   echo -e "${GREEN}[$FILENAME] Finished"
 }
 
+uptimekuma() {
+  # uptimekuma/
+  # ├── upload/
+  # └── kuma.db
+  local FILENAME="uptimekuma"
+  local APPDIR="uptimekuma"
+  local DBS=("kuma.db")
+  local FILES=(
+    "upload" # directory
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+traefik() {
+  # traefik/
+  # ├── certs/
+  # └── traefik.yml
+  local FILENAME="traefik"
+  local APPDIR="traefik"
+  local FILES=(
+    "certs" # directory
+    "*.yml"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+autobrr() {
+  # autobrr/
+  # ├── autobrr.db
+  # └── config.toml
+  local FILENAME="autobrr"
+  local APPDIR="autobrr"
+  local DBS=("autobrr.db")
+  local FILES=(
+    "config.toml"
+    "*.sh"
+    "*.py"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
+actualbudge() {
+  # actual/
+  # ├── server-files/
+  # │   └── account.sqlite
+  # └── user-files/
+  #     └── 2470124b-0d8c-49fa-a076-6de5f6af89a9
+  #         ├── cache.sqlite
+  #         ├── db.sqlite
+  #         └── metadata.json
+  local FILENAME="actual"
+  local APPDIR="actual"
+  local DBS=(
+    "server-files/account.sqlite"
+    "user-files/**/*.sqlite"
+  )
+  local FILES=(
+    "user-files/**/metadata.json"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+
+  # this whole loop is only needed when doing glob for $DBS
+  for DB in "${DBS[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$DB")
+    for DB_PATH in "${GLOB[@]}"; do local DB_FILE=$(echo "$DB_PATH" | sed "s,^$APPDATA/$APPDIR/,,") # remove absolute path from glob
+      export_backup "$FILENAME" "$APPDIR" "$DB_FILE"; ARGS+=("$TMPDIR/$APPDIR/$DB_FILE")
+    done
+  done
+
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
 # -------
 # EXECUTE (in paralell)
 vaultwarden &
@@ -375,5 +475,9 @@ sabnzbd &
 recyclarr &
 overseerr &
 duplicati &
+uptimekuma &
+traefik &
+autobrr &
+actualbudge &
 
 wait
