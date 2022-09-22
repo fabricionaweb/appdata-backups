@@ -109,19 +109,16 @@ vaultwarden() {
 }
 
 plex() {
-  # plex/ (from lsio image)
-  # └── Library/
-  #     └── Application Support/
-  #         └── Plex Media Server/
-  #             ├── Preferences.xml
-  #             ├── Metadata/
-  #             └── Plug-in Support/
-  #                 ├── Preferences/
-  #                 └── Databases/
-  #                     ├── com.plexapp.plugins.library.db
-  #                     └── com.plexapp.plugins.library.blobs.db
+  # plex/ (hotio)
+  # ├── Preferences.xml
+  # ├── Metadata/
+  # └── Plug-in Support/
+  #     ├── Preferences/
+  #     └── Databases/
+  #         ├── com.plexapp.plugins.library.db
+  #         └── com.plexapp.plugins.library.blobs.db
   local FILENAME="plex"
-  local APPDIR="plex/Library/Application Support/Plex Media Server"
+  local APPDIR="plex"
   local DBS=(
     "Plug-in Support/Databases/com.plexapp.plugins.library.db"
     "Plug-in Support/Databases/com.plexapp.plugins.library.blobs.db"

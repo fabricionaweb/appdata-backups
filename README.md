@@ -9,15 +9,13 @@ appdata/
 │   ├── attachments/
 │   └── sends/
 ├── Plex/
-│   └── Library/
-│       └── Application Support/
-│           └── Plex Media Server/
-│               ├── Preferences.xml
-│               └── Plug-in Support/
-│                   ├── Preferences/
-│                   └── Databases/
-│                       ├── com.plexapp.plugins.library.blobs.db
-│                       └── com.plexapp.plugins.library.db
+│   ├── Preferences.xml
+│   ├── Metadata/
+│   └── Plug-in Support/
+│       ├── Preferences/
+│       └── Databases/
+│           ├── com.plexapp.plugins.library.db
+│           └── com.plexapp.plugins.library.blobs.db
 ├── qBittorrent/
 │   ├── wireguard/
 │   │   └── wg0.conf
