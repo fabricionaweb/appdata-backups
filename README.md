@@ -2,54 +2,90 @@
 
 ```
 appdata/
-├── Vaultwarden/
-│   ├── db.sqlite3
-│   ├── rsa_key*
-│   ├── config.json
-│   ├── attachments/
-│   └── sends/
-├── Plex/
-│   ├── Preferences.xml
-│   ├── Metadata/
-│   └── Plug-in Support/
-│       ├── Preferences/
-│       └── Databases/
-│           ├── com.plexapp.plugins.library.db
-│           └── com.plexapp.plugins.library.blobs.db
-├── qBittorrent/
-│   ├── wireguard/
-│   │   └── wg0.conf
-│   ├── data/
-│   │   └── BT_backup/
-│   └── config/
-│       ├── categories.json
-│       ├── qBittorrent.conf
-│       └── qBittorrent-data.conf
-├── SABnzbd/
-│   └── sabnzbd.ini
-├── Recyclarr/
-│   └── recyclarr.yml
-├── Prowlarr/
-│   ├── prowlarr.db
-│   └── config.xml
-├── Radarr/
-│   ├── radarr.db
-│   └── config.xml
-├── Sonarr/
-│   ├── sonarr.db
-│   └── config.xml
-├── Bazarr/
+├── actual/
+│   ├── server-files/
+│   │   └── account.sqlite
+│   └── user-files/
+│       └── <hash>
+│           ├── cache.sqlite
+│           ├── db.sqlite
+│           └── metadata.json
+├── autobrr/
+│   ├── autobrr.db
+│   └── config.toml
+├── bazarr/
 │   ├── config/
 │   │   └── config.ini
 │   └── db/
 │       └── bazarr.db
-├── Tautulli/
-│   ├── tautulli.db
-│   └── config.ini
-└── Duplicati/
-    ├── .config/
-    ├── control_dir_v2/
-    └── *.sqlite
+├── duplicati/
+│   ├── control_dir_v2/
+│   ├── Duplicati-server.sqlite
+│   └── <hash>.sqlite
+├── overseerr/
+│   ├── db/
+│   │   └── db.sqlite3
+│   └── settings.json
+├── plex/
+│   ├── Library/
+│   │   └── Application Support/
+│   │       └── Plex Media Server/
+│   │           ├── Plug-in Support/
+│   │           │   ├── Databases/
+│   │           │   │   ├── com.plexapp.plugins.library.blobs.db
+│   │           │   │   └── com.plexapp.plugins.library.db
+│   │           │   └── Preferences/
+│   │           │       ├── com.plexapp.agents.imdb.xml
+│   │           │       ├── com.plexapp.agents.localmedia.xml
+│   │           │       └── com.plexapp.system.xml
+│   │           └── Preferences.xml
+│   ├── Plug-in Support/
+│   │   ├── Databases/
+│   │   │   ├── com.plexapp.plugins.library.blobs.db
+│   │   │   └── com.plexapp.plugins.library.db
+│   │   └── Preferences/
+│   │       ├── com.plexapp.agents.imdb.xml
+│   │       ├── com.plexapp.agents.localmedia.xml
+│   │       └── com.plexapp.system.xml
+│   └── Preferences.xml
+├── prowlarr/
+│   ├── config.xml
+│   └── prowlarr.db
+├── qbittorrent/
+│   ├── config/
+│   │   ├── categories.json
+│   │   ├── qBittorrent-data.conf
+│   │   └── qBittorrent.conf
+│   ├── data/
+│   │   └── BT_backup/
+│   └── wireguard/
+├── radarr/
+│   ├── config.xml
+│   └── radarr.db
+├── recyclarr/
+│   └── recyclarr.yml
+├── sabnzbd/
+│   └── sabnzbd.ini
+├── sonarr/
+│   ├── config.xml
+│   └── sonarr.db
+├── tautulli/
+│   ├── config.ini
+│   └── tautulli.db
+├── traefik/
+│   ├── certs/
+│   ├── dynamic/
+│   └── traefik.yml
+├── uptimekuma/
+│   ├── kuma.db
+│   └── upload/
+└── vaultwarden/
+    ├── attachments/
+    ├── sends/
+    ├── config.json
+    ├── db.sqlite3
+    ├── rsa_key.pem
+    └── rsa_key.pub.pem
 ```
 
 Note about sqlite: by using the `.backup` command you dont need `-wal` file and neither to stop the container.
