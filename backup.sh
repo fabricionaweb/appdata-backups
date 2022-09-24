@@ -212,7 +212,8 @@ radarr() {
   local DBS=("radarr.db")
   local FILES=(
     "config.xml"
-    "*.{sh,py}" # custom scripts
+    "*.sh" # custom scripts
+    "*.py" # custom scripts
   )
 
   # start the script
@@ -234,7 +235,8 @@ sonarr() {
   local DBS=("sonarr.db")
   local FILES=(
     "config.xml"
-    "*.{sh,py}" # custom scripts
+    "*.sh" # custom scripts
+    "*.py" # custom scripts
   )
 
   # start the script
@@ -279,7 +281,8 @@ tautulli() {
   local FILES=(
     "newsletters" # directory
     "config.ini"
-    "*.{sh,py}"   # custom scripts
+    "*.sh" # custom scripts
+    "*.py" # custom scripts
   )
 
   # start the script
@@ -439,7 +442,9 @@ traefik() {
     "certs"   # directory
     "certs"   # directory
     "dynamic" # directory
-    "*.{yaml,yml,toml}"
+    "*.yaml"
+    "*.yml"
+    "*.toml"
   )
 
   # start the script
@@ -460,7 +465,8 @@ autobrr() {
   local DBS=("autobrr.db")
   local FILES=(
     "config.toml"
-    "*.{sh,py}" # custom scripts
+    "*.sh" # custom scripts
+    "*.py" # custom scripts
   )
 
   # start the script
