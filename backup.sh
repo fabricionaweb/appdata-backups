@@ -346,7 +346,7 @@ recyclarr() {
   # └── recyclarr.yml
   local FILENAME="recyclarr"
   local APPDIR="recyclarr"
-  local FILES=("recyclarr.yml")
+  local FILES=("recyclarr.{yaml,yml}")
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
