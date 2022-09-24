@@ -48,6 +48,28 @@ appdata/
 │   │       ├── com.plexapp.agents.localmedia.xml
 │   │       └── com.plexapp.system.xml
 │   └── Preferences.xml
+├── jellyfin/
+│   ├── data/
+│   │   ├── data/
+│   │   │   ├── device.txt
+│   │   │   ├── jellyfin.db
+│   │   │   └── library.db
+│   │   ├── plugins/
+│   │   │   └── configurations/
+│   │   └── root/
+│   │       └── default/
+│   │           └── Movies/
+│   │               ├── movies.mblink
+│   │               ├── movies.collection
+│   │               └── options.xml
+│   ├── branding.xml
+│   ├── dlna.xml
+│   ├── encoding.xml
+│   ├── metadata.xml
+│   ├── migrations.xml
+│   ├── network.xml
+│   ├── system.xml
+│   └── xbmcmetadata.xml
 ├── prowlarr/
 │   ├── config.xml
 │   └── prowlarr.db

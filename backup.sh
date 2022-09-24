@@ -138,6 +138,52 @@ plex() {
   echo -e "${GREEN}[$FILENAME] Finished"
 }
 
+jellyfin() {
+  # jellyfin/ (lsio and hotio)
+  # ├── data/
+  # │   ├── data/
+  # │   │   ├── device.txt
+  # │   │   ├── jellyfin.db
+  # │   │   └── library.db
+  # │   ├── plugins/
+  # │   └── root/
+  # │       └── default/
+  # │           └── Movies/
+  # │               ├── movies.mblink
+  # │               ├── movies.collection
+  # │               └── options.xml
+  # ├── branding.xml
+  # ├── dlna.xml
+  # ├── encoding.xml
+  # ├── metadata.xml
+  # ├── migrations.xml
+  # ├── network.xml
+  # ├── system.xml
+  # └── xbmcmetadata.xml
+  local FILENAME="jellyfin"
+  local APPDIR="jellyfin"
+  local DBS=(
+    "data/data/jellyfin.db"
+    "data/data/library.db"
+  )
+  local FILES=(
+    "data/plugins/configurations" # directory
+    "data/root"                   # directory
+    "data/plugins"                # directory
+    "data/data/device.txt"
+    "*.xml"
+  )
+
+  # start the script
+  echo -e "${YELLOW}[$FILENAME] Started"
+  local ARGS=() # will keep the files to pass to tar
+  for DB in "${DBS[@]}"; do export_backup "$FILENAME" "$APPDIR" "$DB"; ARGS+=("$TMPDIR/$APPDIR/$DB"); done
+  for FILE in "${FILES[@]}"; do local GLOB; readarray -t GLOB < <(compgen -G "$APPDATA/$APPDIR/$FILE"); ARGS+=("${GLOB[@]}"); done
+  compress_backup "$FILENAME" "${ARGS[@]}"
+  remove_tmp "$FILENAME" "$APPDIR"
+  echo -e "${GREEN}[$FILENAME] Finished"
+}
+
 prowlarr() {
   # prowlarr/ (lsio and hotio)
   # ├── prowlarr.db
@@ -467,6 +513,7 @@ actualbudge() {
 # EXECUTE (in paralell)
 vaultwarden &
 plex &
+jellyfin &
 prowlarr &
 radarr &
 sonarr &
