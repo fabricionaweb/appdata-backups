@@ -49,7 +49,7 @@ compress_backup() {
   #    I = compression algorithm options
   #        xz compresstion with multi-thread enabled (-T0)
   #    f = specify file name
-  #    --transform = use sed replace EXPRESSION to transform files (from inside the tar)
+  #    --transform = use sed replace EXPRESSION to transform files (inside the tar)
   #        "s,<find>,<replace>," format
   #        we are removing the "/tmp" ($TMPDIR) and "/appdata" ($APPDATA) from the archive
   #        the goal is to make a flat archive
@@ -139,7 +139,7 @@ plex() {
 }
 
 prowlarr() {
-  # prowlarr/ (from lsio image)
+  # prowlarr/ (lsio and hotio)
   # ├── prowlarr.db
   # └── config.xml
   local FILENAME="prowlarr"
@@ -158,7 +158,7 @@ prowlarr() {
 }
 
 radarr() {
-  # radarr/ (from lsio image)
+  # radarr/ (lsio and hotio)
   # ├── radarr.db
   # └── config.xml
   local FILENAME="radarr"
@@ -166,8 +166,7 @@ radarr() {
   local DBS=("radarr.db")
   local FILES=(
     "config.xml"
-    "*.sh"
-    "*.py"
+    "*.{sh,py}" # custom scripts
   )
 
   # start the script
@@ -181,7 +180,7 @@ radarr() {
 }
 
 sonarr() {
-  # sonarr/ (from lsio image)
+  # sonarr/ (lsio and hotio)
   # ├── sonarr.db
   # └── config.xml
   local FILENAME="sonarr"
@@ -189,8 +188,7 @@ sonarr() {
   local DBS=("sonarr.db")
   local FILES=(
     "config.xml"
-    "*.sh"
-    "*.py"
+    "*.{sh,py}" # custom scripts
   )
 
   # start the script
@@ -204,7 +202,7 @@ sonarr() {
 }
 
 bazarr() {
-  # bazarr/ (from lsio image)
+  # bazarr/ (lsio and hotio)
   # ├── config/
   # │   └── config.ini
   # └── db/
@@ -225,16 +223,17 @@ bazarr() {
 }
 
 tautulli() {
-  # tautulli/ (from lsio image)
+  # tautulli/ (lsio and hotio)
+  # ├── newsletters/ (optional)
   # ├── tautulli.db
   # └── config.ini
   local FILENAME="tautulli"
   local APPDIR="tautulli"
   local DBS=("tautulli.db")
   local FILES=(
+    "newsletters" # directory
     "config.ini"
-    "*.sh"
-    "*.py"
+    "*.{sh,py}"   # custom scripts
   )
 
   # start the script
@@ -248,7 +247,7 @@ tautulli() {
 }
 
 qbittorrent() {
-  # qbittorrent/ (from hotio image)
+  # qbittorrent/ (hotio)
   # ├── wireguard/
   # │   └── wg0.conf
   # ├── data/
@@ -277,11 +276,15 @@ qbittorrent() {
 }
 
 sabnzbd() {
-  # sabnzbd/ (from lsio image)
+  # sabnzbd/ (lsio and hotio)
+  # ├── scripts/
   # └── sabnzbd.ini
   local FILENAME="sabnzbd"
   local APPDIR="sabnzbd"
-  local FILES=("sabnzbd.ini")
+  local FILES=(
+    "scripts" # directory
+    "sabnzbd.ini"
+  )
 
   # start the script
   echo -e "${YELLOW}[$FILENAME] Started"
@@ -309,7 +312,7 @@ recyclarr() {
 }
 
 overseerr() {
-  # overseerr/ (from lsio image)
+  # overseerr/ (lsio and hotio)
   # ├── settings.json
   # └── db/
   #     └── db.sqlite3
@@ -329,7 +332,7 @@ overseerr() {
 }
 
 duplicati() {
-  # duplicati/ (from lsio image)
+  # duplicati/ (lsio)
   # ├── .config/
   # ├── control_dir_v2/
   # └── *.sqlite
@@ -382,12 +385,15 @@ uptimekuma() {
 traefik() {
   # traefik/
   # ├── certs/
-  # └── traefik.yml
+  # ├── dynamic/
+  # └── traefik.yaml
   local FILENAME="traefik"
   local APPDIR="traefik"
   local FILES=(
-    "certs" # directory
-    "*.yml"
+    "certs"   # directory
+    "certs"   # directory
+    "dynamic" # directory
+    "*.{yaml,yml,toml}"
   )
 
   # start the script
@@ -408,8 +414,7 @@ autobrr() {
   local DBS=("autobrr.db")
   local FILES=(
     "config.toml"
-    "*.sh"
-    "*.py"
+    "*.{sh,py}" # custom scripts
   )
 
   # start the script
@@ -425,7 +430,7 @@ autobrr() {
 actualbudge() {
   # actual/
   # ├── server-files/
-  # │   └── account.sqlite
+  # │   └── account.sqlite
   # └── user-files/
   #     └── 2470124b-0d8c-49fa-a076-6de5f6af89a9
   #         ├── cache.sqlite
