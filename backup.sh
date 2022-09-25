@@ -443,7 +443,6 @@ traefik() {
   local APPDIR="traefik"
   local FILES=(
     "certs"   # directory
-    "certs"   # directory
     "dynamic" # directory
     "*.yaml"
     "*.yml"
