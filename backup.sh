@@ -516,23 +516,23 @@ actualbudge() {
 }
 
 # -------
-# EXECUTE (in paralell)
-vaultwarden &
-plex &
-jellyfin &
-prowlarr &
-radarr &
-sonarr &
-bazarr &
-tautulli &
-qbittorrent &
-sabnzbd &
-recyclarr &
-overseerr &
-duplicati &
-uptimekuma &
-traefik &
-autobrr &
-actualbudge &
+# EXECUTE
+vaultwarden
+plex
+jellyfin
+prowlarr
+radarr
+sonarr
+bazarr
+tautulli
+qbittorrent
+sabnzbd
+recyclarr
+overseerr
+duplicati
+uptimekuma
+traefik
+autobrr
+actualbudge
 
 wait
