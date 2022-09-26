@@ -1,0 +1,7 @@
+[actual] # this will be the tar name and also is the directory name
+server files/account.sqlite
+user files/**/*.sqlite
+user files/**/metadata.json
+
+[recyclarr]
+recyclarr.{yaml,yml}
