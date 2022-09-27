@@ -2,12 +2,12 @@
 
 # --------
 # SETTINGS
-TMPDIR="/tmp"             # temporary directory to hold the exported db - Needs write permission
-APPDATA="$(pwd)/appdata"  # the directory that contains your apps - Needs read permission
-BACKUPS="$(pwd)/backups"  # the directory that will keep the backups - Needs write permission
-SETTINGS="./settings.txt" # settings file containg what to backup
+TMPDIR="/tmp"                    # temporary directory to hold the exported db - Needs write permission
+APPDATA="/mnt/user/appdata"      # the directory that contains your apps - Needs read permission
+BACKUPS="/mnt/user/data/backups" # the directory that will keep the backups - Needs write permission
+SETTINGS="./settings.txt"        # txt containg the list of files to backup
 
-# gonna test it with duplicati/duplicacy - remove if you dont need
+# remove if you dont need
 BACKUPS_UNTAR="$BACKUPS/untar" # the directory that will keep a backups copy without compression - Needs write permission
 
 # ---------
@@ -64,6 +64,15 @@ create_tar() {
     "${ARGS[@]}"
 }
 
+extract_tar() {
+  # params
+  local TARFILE="$1"
+
+  mkdir -p "$BACKUPS_UNTAR"
+  # the file we create contain the app folder
+  tar -xJf "$TARFILE" -C "$BACKUPS_UNTAR"
+}
+
 start_backup() {
   # params
   local SECTION="$1"
@@ -99,12 +108,16 @@ start_backup() {
 
   # create the tar file
   echo -e "$CYAN[$SECTION] Packing $(basename "$TARFILE")"
-  create_tar "$TARFILE" "${ARGS[@]}"
+  create_tar "$TARFILE" "${ARGS[@]}" &
 
-  # clean up TMPDIR
+  # if you also want to save an uncompress copy
+  if [[ $BACKUPS_UNTAR ]]; then
+    echo -e "$CYAN[$SECTION] Unpacking $(basename "$TARFILE")"
+    extract_tar "$TARFILE" &
+  fi
+
   echo -e "$GRAY[$SECTION] Removing temp_dir"
   rm -rf "$TMPDIR/$SECTION"
-
   echo -e "$GREEN[$SECTION] Finished"
 }
 
@@ -147,3 +160,6 @@ for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
     echo -e "$YELLOW[$SECTION] Started"
   fi
 done
+
+# untar can be running in background
+wait
