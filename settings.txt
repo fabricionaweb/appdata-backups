@@ -5,3 +5,8 @@ user files/**/metadata.json
 
 [recyclarr]
 recyclarr.{yaml,yml}
+
+[duplicati]
+.config/
+control_dir_v2/
+*.sqlite

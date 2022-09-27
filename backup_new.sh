@@ -34,30 +34,51 @@ for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
   # escape comments; trim spaces; escape spaces for directories
   LINE=$(sed 's/#.*//g;s/[[:blank:]]*$//;s/ /\\ /g' <<<${SETTINGS_CONTENT[$i]})
 
-  # extract a new section to backup eg: [section]
+  # extract a new section to backup eg: [section] the section is also the folder name
   IS_SECTION=$(sed -nE 's/\[(\w+)\]/\1/p' <<<$LINE)
 
   # current line is not a section and is not empty
   if [[ ! $IS_SECTION && $SECTION && $LINE ]]; then
-    # the section is also the folder name
     # WARNING: im using eval here to native resolve the globs, this is dangerous but I could not found better way, some globs wasnt being solved
+    # this needs to have the full path to resolve
     eval "FILES+=($APPDATA/$SECTION/$LINE)"
   fi
 
-  # current line is a section or is last line
+  # current line is a section or is the last line
   if [[ $IS_SECTION || $i == $SETTINGS_LENGTH ]]; then
 
     # if it had a previous section and have files means we reach the end of section
     if [[ $SECTION && $FILES ]]; then
       # variables
       TIME=$(date +"%H-%M-%S") # 00-52-38
-      FOLDER="$BACKUPS/$DATE"
-      TARFILE="$FOLDER/$SECTION.$TIME.tar.xz"
+      TARFILE="$BACKUPS/$DATE/$SECTION.$TIME.tar.xz"
 
-      # creates the folder
-      mkdir -p $FOLDER
+      # start a new stack to send to tar because we are filtering the database
+      ARGS=()
+      # look for databases inside the FILES
+      for FILE in "${FILES[@]}"; do
+        DEST=$FILE
 
-      echo -e "${CYAN}[$SECTION] Packing $(basename $TARFILE)"
+        # checks if file is database
+        IS_DB=$(sed -nE 's/.*\.(db|sqlite3?)$/\1/p' <<<$FILE)
+        if [[ $IS_DB ]]; then
+          # replace the APPDATA path with TEMPDIR path
+          DEST=$(sed -n "s,^$APPDATA,$TMPDIR,p" <<<$FILE)
+
+          echo -e "${GRAY}[$SECTION] Exporting $(basename "$FILE") to temp_dir"
+          # create the temp dir
+          mkdir -p "$(dirname "$DEST")"
+          # call sqlite api backup
+          sqlite3 "$FILE" ".backup \"$DEST\""
+        fi
+
+        # add to the stack
+        ARGS+=($DEST)
+      done
+
+      echo -e "$CYAN[$SECTION] Packing $(basename "$TARFILE")"
+      # create the backup folder
+      mkdir -p "$(dirname "$TARFILE")"
       # tar command explained
       #    c = create a new archive
       #    I = compression algorithm options
@@ -71,18 +92,22 @@ for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
       #        it is needed to apply our --transform sed (or need to change it)
       #    --ignore-failed-read = do not exit with nonzero on unreadable files
       #        if something goes wrong it will not stop the tar, but you should always verify that
-      tar -cI "xz -T0" -f $TARFILE \
+      tar -cI "xz -T0" -f "$TARFILE" \
         --transform "s,^$TMPDIR/,,;s,^$APPDATA/,," \
         --absolute-names --ignore-failed-read \
         "${FILES[@]}"
+
+      echo -e "$GRAY[$SECTION] Removing temp_dir"
+      rm -rf "$TMPDIR/$SECTION"
+      echo -e "$GREEN[$SECTION] Finished"
     fi
 
     # exit when reach last line
     [[ $i == $SETTINGS_LENGTH ]] && break
 
     # clean the variables for the next section
-    SECTION=$IS_SECTION
+    SECTION="$IS_SECTION"
     FILES=()
-    echo -e "${YELLOW}[$SECTION] Started"
+    echo -e "$YELLOW[$SECTION] Started"
   fi
 done
