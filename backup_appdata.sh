@@ -20,9 +20,6 @@ GRAY="\033[1;30m"
 CYAN="\033[0;36m"
 GREEN="\033[1;32m"
 
-# enable bash options
-shopt -s nullglob extglob
-
 # ---------
 # FUNCTIONS
 
@@ -85,13 +82,15 @@ start_backup() {
   # start a new stack to send to tar because we are filtering the database from FILES
   ARGS=()
 
-  # look for databases inside FILES and change the path
-  # we are exporting the database to TMPDIR we need to add them to tar
+  # loop over FILES to check if exists and if is database (to export it)
   for FILE in "${FILES[@]}"; do
-    # if is not a database the source remaing the same
-    DEST=$FILE
+    # if the file or directory doesnt exist do nothing
+    [[ ! -f $FILE && ! -d $FILE ]] && continue
+
     # checks if file is a database
     IS_DB=$(sed -nE 's/.*\.(db|sqlite3?)$/\1/p' <<<$FILE)
+    # if is not a database the source will remaing the same
+    DEST=$FILE
 
     if [[ $IS_DB ]]; then
       # if is a database replace the path APPDATA to TMPDIR
@@ -106,14 +105,20 @@ start_backup() {
     ARGS+=("$DEST")
   done
 
-  # create the tar file
+  # no file found or glob resolved, nothing to backup
+  if [[ ! $ARGS ]]; then
+    echo -e "$GRAY[$SECTION] Nothing to backup"
+    return
+  fi
+
+  # creates the tar file
   echo -e "$CYAN[$SECTION] Packing $(basename "$TARFILE")"
-  create_tar "$TARFILE" "${ARGS[@]}" &
+  create_tar "$TARFILE" "${ARGS[@]}"
 
   # if you also want to save an uncompress copy
   if [[ $BACKUPS_UNTAR ]]; then
     echo -e "$CYAN[$SECTION] Unpacking $(basename "$TARFILE")"
-    extract_tar "$TARFILE" &
+    extract_tar "$TARFILE" & # run in background
   fi
 
   echo -e "$GRAY[$SECTION] Removing temp_dir"
@@ -139,8 +144,9 @@ for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
   # current line is not empty, is not a section and it has a previous section declared (means it is file)
   if [[ $LINE && ! $IS_SECTION && $SECTION ]]; then
     # WARNING: im using eval here to native resolve the globs, this is dangerous but I could not found better way, some globs wasnt being solved
-    # this needs to have the full path to bash resolve the globs
-    eval "FILES+=($APPDATA/$SECTION/$LINE)"
+    # it needs to have the full path to bash resolve the globs
+    # later we check if the file exists
+    eval "shopt -s globstar extglob; FILES+=($APPDATA/$SECTION/$LINE)"
   fi
 
   # current line is a section or reach the end of the file
