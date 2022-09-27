@@ -1,116 +1,8 @@
-# What to backup
+## What to backup
 
-```
-appdata/
-├── actual/
-│   ├── server-files/
-│   │   └── account.sqlite
-│   └── user-files/
-│       └── <hash>
-│           ├── cache.sqlite
-│           ├── db.sqlite
-│           └── metadata.json
-├── autobrr/
-│   ├── autobrr.db
-│   └── config.toml
-├── bazarr/
-│   ├── config/
-│   │   └── config.ini
-│   └── db/
-│       └── bazarr.db
-├── duplicati/
-│   ├── control_dir_v2/
-│   ├── Duplicati-server.sqlite
-│   └── <hash>.sqlite
-├── overseerr/
-│   ├── db/
-│   │   └── db.sqlite3
-│   └── settings.json
-├── plex/
-│   ├── Library/
-│   │   └── Application Support/
-│   │       └── Plex Media Server/
-│   │           ├── Plug-in Support/
-│   │           │   ├── Databases/
-│   │           │   │   ├── com.plexapp.plugins.library.blobs.db
-│   │           │   │   └── com.plexapp.plugins.library.db
-│   │           │   └── Preferences/
-│   │           │       ├── com.plexapp.agents.imdb.xml
-│   │           │       ├── com.plexapp.agents.localmedia.xml
-│   │           │       └── com.plexapp.system.xml
-│   │           └── Preferences.xml
-│   ├── Plug-in Support/
-│   │   ├── Databases/
-│   │   │   ├── com.plexapp.plugins.library.blobs.db
-│   │   │   └── com.plexapp.plugins.library.db
-│   │   └── Preferences/
-│   │       ├── com.plexapp.agents.imdb.xml
-│   │       ├── com.plexapp.agents.localmedia.xml
-│   │       └── com.plexapp.system.xml
-│   └── Preferences.xml
-├── jellyfin/
-│   ├── data/
-│   │   ├── data/
-│   │   │   ├── device.txt
-│   │   │   ├── jellyfin.db
-│   │   │   └── library.db
-│   │   ├── plugins/
-│   │   │   └── configurations/
-│   │   └── root/
-│   │       └── default/
-│   │           └── Movies/
-│   │               ├── movies.mblink
-│   │               ├── movies.collection
-│   │               └── options.xml
-│   ├── branding.xml
-│   ├── dlna.xml
-│   ├── encoding.xml
-│   ├── metadata.xml
-│   ├── migrations.xml
-│   ├── network.xml
-│   ├── system.xml
-│   └── xbmcmetadata.xml
-├── prowlarr/
-│   ├── config.xml
-│   └── prowlarr.db
-├── qbittorrent/
-│   ├── config/
-│   │   ├── categories.json
-│   │   ├── qBittorrent-data.conf
-│   │   └── qBittorrent.conf
-│   ├── data/
-│   │   └── BT_backup/
-│   └── wireguard/
-├── radarr/
-│   ├── config.xml
-│   └── radarr.db
-├── recyclarr/
-│   └── recyclarr.yml
-├── sabnzbd/
-│   └── sabnzbd.ini
-├── sonarr/
-│   ├── config.xml
-│   └── sonarr.db
-├── tautulli/
-│   ├── config.ini
-│   └── tautulli.db
-├── traefik/
-│   ├── certs/
-│   ├── dynamic/
-│   └── traefik.yml
-├── uptimekuma/
-│   ├── kuma.db
-│   └── upload/
-└── vaultwarden/
-    ├── attachments/
-    ├── sends/
-    ├── config.json
-    ├── db.sqlite3
-    ├── rsa_key.pem
-    └── rsa_key.pub.pem
-```
+The [settings.txt](./settings.txt) contains the files to backup. `[sections]` is the app folder and it will also be the .tar name.
 
-Note about sqlite: by using the `.backup` command you dont need `-wal` file and neither to stop the container.
+By using the `.backup` command you dont need `-wal` file and neither to stop the aaplication.
 
 **But you do need to delete -wal file before restore.**
 
@@ -124,7 +16,7 @@ This script works on `.backup` command which is the recommended method to ensure
 
 The `-shm` file is just indexes and will be regenerated normal.
 
-# How to restore
+## How to restore
 
 - Stop the application you want to restore
   - Must have run at least once before
@@ -142,6 +34,8 @@ find "$APPDATA/vaultwarden" -name "*-wal" -delete
 tar -xJvf <vaultwarden-file>.tar.xz -C $APPDATA
 ```
 
-# Dependency
+## Dependency
 
-This package depends on `sqlite3` to properly backup the files, and `tar` to compress it
+- sqlite3
+- tar
+- bash
