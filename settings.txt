@@ -1,12 +1,85 @@
-[actual] # this will be the tar name and also is the directory name
-server files/account.sqlite
-user files/**/*.sqlite
-user files/**/metadata.json
+[plex]
+Plug-in Support/Preferences/
+Plug-in Support/Databases/com.plexapp.plugins.library{,.blobs}.db
+Preferences.xml
+
+[jellyfin]
+data/root/
+data/plugins/
+data/data/device.txt
+data/data/{jellyfin,library}.db
+*.xml
+
+[tautulli]
+config.ini
+tautulli.db
+*.{py,sh}
+
+[overseerr]
+db/db.sqlite3
+settings.json
+
+[autobrr]
+autobrr.db
+config.toml
+*.{py,sh}
+
+[bazarr]
+config/config.ini
+db/bazarr.db
+
+[prowlarr]
+config.xml
+prowlarr.db
 
 [recyclarr]
 recyclarr.{yaml,yml}
+
+[radarr]
+config.xml
+radarr.db
+*.{py,sh}
+
+[sonarr]
+config.xml
+sonarr.db
+*.{py,sh}
+
+[sabnzbd]
+scripts/
+sabnzbd.ini
+
+[qbittorrent]
+config/categories.json
+config/qBittorrent{,-data}.conf
+data/BT_backup/
+wireguard/
+
+[actual]
+server-files/account.sqlite
+user-files/**/{cache,db}.sqlite
+user-files/**/metadata.json
 
 [duplicati]
 .config/
 control_dir_v2/
 *.sqlite
+
+[traefik]
+certs/
+dynamic/
+traefik.{yaml,yml,toml}
+
+[uptimekuma]
+upload/
+kuma.db
+
+[homarr]
+*.json
+
+[vaultwarden]
+attachments/
+sends/
+db.sqlite3
+rsa_key*
+config.json
