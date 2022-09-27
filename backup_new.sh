@@ -2,9 +2,10 @@
 
 # --------
 # SETTINGS
-TMPDIR="/tmp"            # temporary directory to hold the exported db - Needs write permission
-APPDATA="$(pwd)/appdata" # the directory that contains your apps - Needs read permission
-BACKUPS="$(pwd)/backups" # the directory that will keep the backups - Needs write permission
+TMPDIR="/tmp"             # temporary directory to hold the exported db - Needs write permission
+APPDATA="$(pwd)/appdata"  # the directory that contains your apps - Needs read permission
+BACKUPS="$(pwd)/backups"  # the directory that will keep the backups - Needs write permission
+SETTINGS="./settings.txt" # settings file containg what to backup
 
 # gonna test it with duplicati/duplicacy - remove if you dont need
 BACKUPS_UNTAR="$BACKUPS/untar" # the directory that will keep a backups copy without compression - Needs write permission
@@ -24,56 +25,55 @@ GREEN="\033[1;32m"
 
 # enable bash options
 shopt -s nullglob extglob
-# read the file in array
-mapfile -t SETTINGS_CONTENT <"./settings.txt"
-# number of lines
+# read the file and save in array
+mapfile -t SETTINGS_CONTENT <$SETTINGS
+# number of lines in the file
 SETTINGS_LENGTH=${#SETTINGS_CONTENT[@]}
 
 # loop over settings.txt, line by line
 for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
   # escape comments; trim spaces; escape spaces for directories
   LINE=$(sed 's/#.*//g;s/[[:blank:]]*$//;s/ /\\ /g' <<<${SETTINGS_CONTENT[$i]})
-
-  # extract a new section to backup eg: [section] the section is also the folder name
+  # extract a section to backup eg: [section] the section is also the folder name
   IS_SECTION=$(sed -nE 's/\[(\w+)\]/\1/p' <<<$LINE)
 
-  # current line is not a section and is not empty
-  if [[ ! $IS_SECTION && $SECTION && $LINE ]]; then
+  # current line is not empty, is not a section and it has a previous section declared (means it is file)
+  if [[ $LINE && ! $IS_SECTION && $SECTION ]]; then
     # WARNING: im using eval here to native resolve the globs, this is dangerous but I could not found better way, some globs wasnt being solved
-    # this needs to have the full path to resolve
+    # this needs to have the full path to bash resolve the globs
     eval "FILES+=($APPDATA/$SECTION/$LINE)"
   fi
 
-  # current line is a section or is the last line
+  # current line is a section or reach the end of the file
   if [[ $IS_SECTION || $i == $SETTINGS_LENGTH ]]; then
 
-    # if it had a previous section and have files means we reach the end of section
+    # it had a previous section and have files (means we are changing sections, we reach the end of a section)
     if [[ $SECTION && $FILES ]]; then
       # variables
       TIME=$(date +"%H-%M-%S") # 00-52-38
       TARFILE="$BACKUPS/$DATE/$SECTION.$TIME.tar.xz"
-
       # start a new stack to send to tar because we are filtering the database
       ARGS=()
-      # look for databases inside the FILES
-      for FILE in "${FILES[@]}"; do
-        DEST=$FILE
 
-        # checks if file is database
+      # look for databases inside the FILES and change the path for database
+      # we are exporting the database to TMPDIR we need to add them to tar
+      for FILE in "${FILES[@]}"; do
+        # if is not a database the source remaing the same
+        SRC=$FILE
+        # checks if file is a database
         IS_DB=$(sed -nE 's/.*\.(db|sqlite3?)$/\1/p' <<<$FILE)
         if [[ $IS_DB ]]; then
-          # replace the APPDATA path with TEMPDIR path
-          DEST=$(sed -n "s,^$APPDATA,$TMPDIR,p" <<<$FILE)
+          # replace the src APPDATA with TEMPDIR
+          SRC=$(sed -n "s,^$APPDATA,$TMPDIR,p" <<<$FILE)
 
           echo -e "${GRAY}[$SECTION] Exporting $(basename "$FILE") to temp_dir"
           # create the temp dir
-          mkdir -p "$(dirname "$DEST")"
-          # call sqlite api backup
-          sqlite3 "$FILE" ".backup \"$DEST\""
+          mkdir -p "$(dirname "$SRC")"
+          # call sqlite api backup to save the backup in SRC
+          sqlite3 "$FILE" ".backup \"$SRC\""
         fi
-
-        # add to the stack
-        ARGS+=($DEST)
+        # add SRC to the new stack
+        ARGS+=("$SRC")
       done
 
       echo -e "$CYAN[$SECTION] Packing $(basename "$TARFILE")"
@@ -95,17 +95,17 @@ for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
       tar -cI "xz -T0" -f "$TARFILE" \
         --transform "s,^$TMPDIR/,,;s,^$APPDATA/,," \
         --absolute-names --ignore-failed-read \
-        "${FILES[@]}"
+        "${ARGS[@]}"
 
       echo -e "$GRAY[$SECTION] Removing temp_dir"
       rm -rf "$TMPDIR/$SECTION"
       echo -e "$GREEN[$SECTION] Finished"
     fi
 
-    # exit when reach last line
+    # reach the end of the file, stop the loop
     [[ $i == $SETTINGS_LENGTH ]] && break
 
-    # clean the variables for the next section
+    # set the variables for the next section
     SECTION="$IS_SECTION"
     FILES=()
     echo -e "$YELLOW[$SECTION] Started"
