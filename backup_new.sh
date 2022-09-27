@@ -20,11 +20,97 @@ GRAY="\033[1;30m"
 CYAN="\033[0;36m"
 GREEN="\033[1;32m"
 
+# enable bash options
+shopt -s nullglob extglob
+
+# ---------
+# FUNCTIONS
+
+export_database() {
+  # params
+  local FILE="$1"
+  local DEST="$2"
+
+  # create the temp dir
+  mkdir -p "$(dirname "$DEST")"
+  # call sqlite api backup to save the backup in TMPDIR
+  sqlite3 "$FILE" ".backup \"$DEST\""
+}
+
+create_tar() {
+  # params
+  local TARFILE="$1"
+  shift
+  local ARGS=("$@")
+
+  # create the backup folder
+  mkdir -p "$(dirname "$TARFILE")"
+  # tar command explained
+  #    c = create a new archive
+  #    I = compression algorithm options
+  #        xz compresstion with multi-thread enabled (-T0)
+  #    f = specify file name
+  #    --transform = use sed replace EXPRESSION to transform files (inside the tar)
+  #        "s,<find>,<replace>," format
+  #        we are removing the "/tmp" ($TMPDIR) and "/appdata" ($APPDATA) from the archive
+  #        the goal is to make a flat archive
+  #    --absolute-names = don't strip leading '/'s from file names
+  #        it is needed to apply our --transform sed (or need to change it)
+  #    --ignore-failed-read = do not exit with nonzero on unreadable files
+  #        if something goes wrong it will not stop the tar, but you should always verify that
+  tar -cI "xz -T0" -f "$TARFILE" \
+    --transform "s,^$TMPDIR/,,;s,^$APPDATA/,," \
+    --absolute-names --ignore-failed-read \
+    "${ARGS[@]}"
+}
+
+start_backup() {
+  # params
+  local SECTION="$1"
+  shift
+  local FILES=("$@")
+
+  # variables
+  TIME=$(date +"%H-%M-%S") # 00-52-38
+  TARFILE="$BACKUPS/$DATE/$SECTION.$TIME.tar.xz"
+  # start a new stack to send to tar because we are filtering the database from FILES
+  ARGS=()
+
+  # look for databases inside FILES and change the path
+  # we are exporting the database to TMPDIR we need to add them to tar
+  for FILE in "${FILES[@]}"; do
+    # if is not a database the source remaing the same
+    DEST=$FILE
+    # checks if file is a database
+    IS_DB=$(sed -nE 's/.*\.(db|sqlite3?)$/\1/p' <<<$FILE)
+
+    if [[ $IS_DB ]]; then
+      # if is a database replace the path APPDATA to TMPDIR
+      DEST=$(sed -n "s,^$APPDATA,$TMPDIR,p" <<<$FILE)
+
+      # export the database to TMPDIR
+      echo -e "$GRAY[$SECTION] Exporting $(basename "$FILE") to temp_dir"
+      export_database "$FILE" "$DEST"
+    fi
+
+    # add SRC to the new stack
+    ARGS+=("$DEST")
+  done
+
+  # create the tar file
+  echo -e "$CYAN[$SECTION] Packing $(basename "$TARFILE")"
+  create_tar "$TARFILE" "${ARGS[@]}"
+
+  # clean up TMPDIR
+  echo -e "$GRAY[$SECTION] Removing temp_dir"
+  rm -rf "$TMPDIR/$SECTION"
+
+  echo -e "$GREEN[$SECTION] Finished"
+}
+
 # ------------
 # START SCRIPT
 
-# enable bash options
-shopt -s nullglob extglob
 # read the file and save in array
 mapfile -t SETTINGS_CONTENT <$SETTINGS
 # number of lines in the file
@@ -49,57 +135,7 @@ for ((i = 0; i <= $SETTINGS_LENGTH; i++)); do
 
     # it had a previous section and have files (means we are changing sections, we reach the end of a section)
     if [[ $SECTION && $FILES ]]; then
-      # variables
-      TIME=$(date +"%H-%M-%S") # 00-52-38
-      TARFILE="$BACKUPS/$DATE/$SECTION.$TIME.tar.xz"
-      # start a new stack to send to tar because we are filtering the database
-      ARGS=()
-
-      # look for databases inside the FILES and change the path for database
-      # we are exporting the database to TMPDIR we need to add them to tar
-      for FILE in "${FILES[@]}"; do
-        # if is not a database the source remaing the same
-        SRC=$FILE
-        # checks if file is a database
-        IS_DB=$(sed -nE 's/.*\.(db|sqlite3?)$/\1/p' <<<$FILE)
-        if [[ $IS_DB ]]; then
-          # replace the src APPDATA with TEMPDIR
-          SRC=$(sed -n "s,^$APPDATA,$TMPDIR,p" <<<$FILE)
-
-          echo -e "${GRAY}[$SECTION] Exporting $(basename "$FILE") to temp_dir"
-          # create the temp dir
-          mkdir -p "$(dirname "$SRC")"
-          # call sqlite api backup to save the backup in SRC
-          sqlite3 "$FILE" ".backup \"$SRC\""
-        fi
-        # add SRC to the new stack
-        ARGS+=("$SRC")
-      done
-
-      echo -e "$CYAN[$SECTION] Packing $(basename "$TARFILE")"
-      # create the backup folder
-      mkdir -p "$(dirname "$TARFILE")"
-      # tar command explained
-      #    c = create a new archive
-      #    I = compression algorithm options
-      #        xz compresstion with multi-thread enabled (-T0)
-      #    f = specify file name
-      #    --transform = use sed replace EXPRESSION to transform files (inside the tar)
-      #        "s,<find>,<replace>," format
-      #        we are removing the "/tmp" ($TMPDIR) and "/appdata" ($APPDATA) from the archive
-      #        the goal is to make a flat archive
-      #    --absolute-names = don't strip leading '/'s from file names
-      #        it is needed to apply our --transform sed (or need to change it)
-      #    --ignore-failed-read = do not exit with nonzero on unreadable files
-      #        if something goes wrong it will not stop the tar, but you should always verify that
-      tar -cI "xz -T0" -f "$TARFILE" \
-        --transform "s,^$TMPDIR/,,;s,^$APPDATA/,," \
-        --absolute-names --ignore-failed-read \
-        "${ARGS[@]}"
-
-      echo -e "$GRAY[$SECTION] Removing temp_dir"
-      rm -rf "$TMPDIR/$SECTION"
-      echo -e "$GREEN[$SECTION] Finished"
+      start_backup "$SECTION" "${FILES[@]}"
     fi
 
     # reach the end of the file, stop the loop
