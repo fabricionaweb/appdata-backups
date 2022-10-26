@@ -118,6 +118,8 @@ start_backup() {
   # if you also want to save an uncompress copy
   if [[ $BACKUPS_UNTAR ]]; then
     echo -e "$CYAN[$SECTION] Unpacking $(basename "$TARFILE")"
+    # remove old backups
+    rm -rf "$BACKUPS_UNTAR/$SECTION" 2>/dev/null
     extract_tar "$TARFILE" & # run in background
   fi
 

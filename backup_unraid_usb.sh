@@ -50,6 +50,8 @@ tar -cI "xz -T0" -f "$BACKUPS/$DATE/$TARFILE" --ignore-failed-read ${FILES[@]}
 
 # save a uncompress copy
 if [[ "$BACKUPS_UNTAR" ]]; then
+  # remove old backups
+  rm -rf "$BACKUPS_UNTAR" 2>/dev/null
   mkdir -p "$BACKUPS_UNTAR"
   echo -e "${CYAN}[$FILENAME] Extrating copy "$TARFILE""
   tar -xJf "$BACKUPS/$DATE/$TARFILE" -C "$BACKUPS_UNTAR"
